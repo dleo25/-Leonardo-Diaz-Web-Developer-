@@ -65,11 +65,6 @@ const Projects = () => {
                   </span>
                 ))}
               </div>
-
-              <button className="w-fit flex items-center gap-2 text-white border-b border-gold-500 pb-1 hover:text-gold-500 transition-colors group">
-                Ver detalles del proyecto
-                <ExternalLink size={16} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
-              </button>
             </div>
           </div>
         </motion.div>

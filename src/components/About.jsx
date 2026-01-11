@@ -47,8 +47,8 @@ const About = () => {
             
             <div className="flex justify-center md:justify-start gap-8 text-center md:text-left">
               <div>
-                <span className="block text-3xl font-bold text-white mb-1">+3</span>
-                <span className="text-xs text-gold-500 uppercase tracking-wider">Años Exp.</span>
+                <span className="block text-3xl font-bold text-white mb-1">100%</span>
+                <span className="text-xs text-gold-500 uppercase tracking-wider">Pasión</span>
               </div>
               <div>
                 <span className="block text-3xl font-bold text-white mb-1">100%</span>

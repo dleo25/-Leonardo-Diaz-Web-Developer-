@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { MessageSquare, FileText, PenTool, Globe, Settings, ArrowRight, ArrowDown } from 'lucide-react';
+import { MessageSquare, FileText, PenTool, Globe, Settings, ArrowDown } from 'lucide-react';
 
 const steps = [
   { icon: <MessageSquare size={24} />, title: "Hablamos", desc: "Entiendo tus necesidades" },
@@ -11,33 +11,24 @@ const steps = [
 ];
 
 const Workflow = () => {
-  const [activeStep, setActiveStep] = useState(-1); // -1 means animation hasn't started
+  const [activeStep, setActiveStep] = useState(-1);
   const [visibleArrows, setVisibleArrows] = useState([]);
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.3 });
 
   useEffect(() => {
     if (isInView && activeStep === -1) {
-      // Start the sequence
       runSequence();
     }
   }, [isInView]);
 
   const runSequence = async () => {
-    // Step 0
     setActiveStep(0);
     
     for (let i = 0; i < steps.length - 1; i++) {
-      // Wait 2 seconds with current step active
       await new Promise(r => setTimeout(r, 2000));
-      
-      // Show arrow
       setVisibleArrows(prev => [...prev, i]);
-      
-      // Wait 0.5 seconds for arrow animation
-      await new Promise(r => setTimeout(r, 500));
-      
-      // Activate next step (this will shrink previous one via React state)
+      await new Promise(r => setTimeout(r, 1000)); // Esperar un poco más para que se dibuje la flecha
       setActiveStep(i + 1);
     }
   };
@@ -56,7 +47,7 @@ const Workflow = () => {
           
           {steps.map((step, index) => {
             const isActive = index === activeStep;
-            const isVisible = index <= activeStep; // Steps remain visible after being active
+            const isVisible = index <= activeStep;
 
             return (
               <React.Fragment key={index}>
@@ -65,7 +56,7 @@ const Workflow = () => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ 
                     opacity: isVisible ? 1 : 0,
-                    scale: isActive ? 1.3 : (isVisible ? 1 : 0.8), // Big when active, normal when passed
+                    scale: isActive ? 1.3 : (isVisible ? 1 : 0.8),
                     filter: isActive ? "drop-shadow(0 0 15px rgba(212, 175, 55, 0.3))" : "none",
                     y: isVisible ? 0 : 20
                   }}
@@ -85,27 +76,43 @@ const Workflow = () => {
 
                 {/* Flecha Animada (Solo si no es el último elemento) */}
                 {index < steps.length - 1 && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ 
-                      opacity: visibleArrows.includes(index) ? 1 : 0,
-                      scale: visibleArrows.includes(index) ? 1.5 : 0, // Flecha más grande (1.5x)
-                    }}
-                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                    className="flex items-center justify-center text-gold-500 z-0 my-4 md:my-0 relative"
-                  >
-                    {/* Glow effect background */}
-                    <div className={`absolute inset-0 bg-gold-500/20 blur-xl rounded-full transition-opacity duration-500 ${visibleArrows.includes(index) ? 'opacity-100' : 'opacity-0'}`} />
-                    
-                    {/* Flecha Desktop (Horizontal) */}
-                    <div className="hidden md:block drop-shadow-[0_0_8px_rgba(212,175,55,0.8)]">
-                       <ArrowRight size={32} strokeWidth={3} />
+                  <div className="flex items-center justify-center text-gold-500 z-0 my-4 md:my-0 relative w-full md:w-auto md:flex-1">
+                    {/* Flecha Desktop (Larga y dibujada) */}
+                    <div className="hidden md:block w-full px-2">
+                       <svg width="100%" height="20" viewBox="0 0 100 20" preserveAspectRatio="none">
+                          <motion.path
+                            d="M0,10 L95,10"
+                            fill="transparent"
+                            strokeWidth="2"
+                            stroke="#D4AF37"
+                            initial={{ pathLength: 0 }}
+                            animate={{ pathLength: visibleArrows.includes(index) ? 1 : 0 }}
+                            transition={{ duration: 0.8, ease: "easeInOut" }}
+                          />
+                          <motion.path
+                            d="M90,5 L100,10 L90,15"
+                            fill="transparent"
+                            strokeWidth="2"
+                            stroke="#D4AF37"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: visibleArrows.includes(index) ? 1 : 0 }}
+                            transition={{ delay: 0.7, duration: 0.2 }}
+                          />
+                       </svg>
                     </div>
+
                     {/* Flecha Móvil (Vertical) */}
-                    <div className="md:hidden drop-shadow-[0_0_8px_rgba(212,175,55,0.8)]">
+                    <motion.div 
+                       initial={{ opacity: 0, scale: 0 }}
+                       animate={{ 
+                         opacity: visibleArrows.includes(index) ? 1 : 0,
+                         scale: visibleArrows.includes(index) ? 1 : 0,
+                       }}
+                       className="md:hidden drop-shadow-[0_0_8px_rgba(212,175,55,0.8)]"
+                    >
                        <ArrowDown size={32} strokeWidth={3} />
-                    </div>
-                  </motion.div>
+                    </motion.div>
+                  </div>
                 )}
               </React.Fragment>
             );
